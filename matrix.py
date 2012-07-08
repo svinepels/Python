@@ -98,14 +98,8 @@ class Matrix(object):
     def is_square(self):
         return self.row_count() == self.column_count()
 
-    def element_function(self, function):
-        rows = []
-        for m in range(self.row_count()):
-            row = []
-            for n in range(self.column_count()):
-                row.append(function(self.element(m+1,n+1)))
-            rows.append(row)
-        return Matrix(*rows)
+    def element_function(self, elfunction):
+        return Matrix.construct(self.row_count(), self.column_count(), lambda x,y: elfunction(self.element(x, y)))
 
     def __eq__(self, other):
         if not self.equal_dimensions(other):
@@ -147,13 +141,7 @@ class Matrix(object):
         return Matrix(*rows)
 
     def transpose(self):
-        rows = []
-        for m in range(self.column_count()):
-            row = []
-            for n in range(self.row_count()):
-                row.append(self.element(n+1,m+1))
-            rows.append(row)
-        return Matrix(*rows)
+        return Matrix.construct(self.column_count(), self.row_count(), lambda x, y: self.element(y, x))
 
     def power(self, n):
         if not isinstance(n, int):
