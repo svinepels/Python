@@ -116,9 +116,35 @@ class MatriserTest(unittest.TestCase):
             Matrix([5]).det())
         self.assertEquals(
             1,
-            Matrix([1, 0], [0, 1]).det())
-##        self.assertEquals(
-##            1,
-##            Matrix.identity(4).det())
+            Matrix.identity(4).det())
+        self.assertEquals(
+            -141,
+            Matrix([1, 4, 3, 5], [2, 4, 5, 3], [0, 5, 7, 2], [1, 1, 3, 5]).det())
 
+    def testAdjugate(self):
+        matrix = Matrix([2, 0, 0], [0, 2, 0], [0, 0, 2])
+        self.assertEquals(
+            Matrix([4, 0, 0], [0, 4, 0], [0, 0, 4]),
+            matrix.adjugate())
+        self.assertEquals(
+            Matrix([7, -3], [-2, 1]),
+            Matrix([1, 3], [2, 7]).adjugate())
+
+    def testInverse(self):
+        matrix = Matrix([1, 4, 0, 3], [0, -3, 4.8, 9], [1, 2, 7, 3], [4, -3.8, 0.4, 1])
+        self.assertEquals(
+            matrix.identity(2),
+            matrix.identity(2).inverse())
+        self.assertEquals(
+            Matrix([7, -3], [-2, 1]),
+            Matrix([1, 3], [2, 7]).inverse())
+        self.assertEquals(
+            matrix.identity(4),
+            matrix * matrix.inverse())
+
+    def testCoFactor(self):
+        self.assertEquals(
+            Matrix([1, 0, 0, 5], [0, 1, 0, -8], [0, 0, 1, 3], [4, -2, 1, 7]).cofactor(4, 4),
+            1.0)
+        
 unittest.main()

@@ -1,4 +1,5 @@
 from numbers import Number
+import decimal
 import copy
 
 def dot_product(vector1, vector2):
@@ -13,11 +14,14 @@ class MatrixError(Exception):
 
 class Matrix(object):
     def __init__(self, *rows):
-        self._rows = rows
         for row in rows:
             assert len(row) == len(rows[0])
             for cell in row:
                 assert isinstance(cell, Number)
+        for m in range(len(rows)):
+            for n in range(len(rows[0])):
+                rows[m][n] = float(rows[m][n])
+        self._rows = rows
             
 
     @classmethod
@@ -155,3 +159,22 @@ class Matrix(object):
 
     def is_invertible(self):
         return self.det() != 0
+
+    def adjugate(self):
+        if not self.is_invertible():
+            raise MatrixError, 'The matrix is not invertible'
+        rows = []
+        for m in range(self.row_count()):
+            row = []
+            for n in range(self.row_count()):
+                row.append(self.cofactor(m+1, n+1))
+            rows.append(row)
+        return Matrix(*rows).transpose()
+
+    def inverse(self):
+        if not self.is_invertible():
+            raise MatrixError, 'The matrix is not invertible'
+        return self.adjugate().scal(1.0 / self.det())
+
+
+
