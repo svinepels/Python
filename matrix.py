@@ -75,6 +75,15 @@ class Matrix(object):
     def is_square(self):
         return self.row_count() == self.column_count()
 
+    def element_function(self, function):
+        rows = []
+        for m in range(self.row_count()):
+            row = []
+            for n in range(self.column_count()):
+                row.append(function(self.element(m+1,n+1)))
+            rows.append(row)
+        return Matrix(*rows)
+
     def __eq__(self, other):
         if not self.equal_dimensions(other):
             return False
@@ -97,14 +106,11 @@ class Matrix(object):
             rows.append(row)
         return Matrix(*rows)
 
+    def __sub__(self, other):
+        return self + other.scal(-1)
+
     def scal(self, number):
-        rows = []
-        for m in range(self.row_count()):
-            rad = []
-            for n in range(self.column_count()):
-                rad.append(number * self.element(m+1, n+1))
-            rows.append(rad)
-        return Matrix(*rows)
+        return self.element_function(lambda x: number * x)
 
     def __mul__(self, other):
         if self.column_count() !=  other.row_count():
@@ -127,11 +133,15 @@ class Matrix(object):
         return Matrix(*rows)
 
     def power(self, n):
-        if not self.is_square():
-            raise MatrixError, 'The matrix is not square'
+        if not isinstance(n, int):
+            raise MatrixError, 'The exponent must be an integer'
         prod = Matrix.identity(self.row_count())
-        for k in range(n):
-            prod *= self
+        if n >= 0:
+            for k in range(n):
+                prod *= self
+            return prod
+        for k in range(-1 * n):
+            prod *= self.inverse()
         return prod
 
     def minor_matrix(self, i, j):

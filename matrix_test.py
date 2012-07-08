@@ -82,6 +82,12 @@ class MatriserTest(unittest.TestCase):
         self.assertEquals(
             matrix.power(3),
             Matrix([8, 0], [0, 8]))
+        self.assertEquals(
+            Matrix.identity(3),
+            Matrix([0, 6, 7], [3, -4, 2], [0, 4, 4]).power(0))
+        self.assertEquals(
+            Matrix([0.25, 0.0], [0.0, 0.25]),
+            Matrix([2, 0], [0, 2]).power(-2))
 
     def testZeroMatrix2(self):
         self.assertEquals(
@@ -146,5 +152,15 @@ class MatriserTest(unittest.TestCase):
         self.assertEquals(
             Matrix([1, 0, 0, 5], [0, 1, 0, -8], [0, 0, 1, 3], [4, -2, 1, 7]).cofactor(4, 4),
             1.0)
+
+    def testElementFunction(self):
+        self.assertEquals(
+            Matrix([8, 16], [2, 1]),
+            Matrix([3, 4], [1, 0]).element_function(lambda x: 2 ** x))
+
+    def testSubtraction(self):
+        self.assertEquals(
+            Matrix([1, 9], [4, -2]),
+            Matrix([3, 8], [2, 7]) - Matrix([2, -1], [-2, 9]))
         
 unittest.main()
