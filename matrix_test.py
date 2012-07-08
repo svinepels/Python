@@ -131,7 +131,7 @@ class MatriserTest(unittest.TestCase):
             Matrix([1, 3], [2, 7]).adjugate())
 
     def testInverse(self):
-        matrix = Matrix([1, 4, 0, 3], [0, -3, 4.8, 9], [1, 2, 7, 3], [4, -3.8, 0.4, 1])
+        matrix = Matrix([1, 4, 0], [0, -3, 4], [1, 2, 2])
         self.assertEquals(
             matrix.identity(2),
             matrix.identity(2).inverse())
@@ -139,7 +139,7 @@ class MatriserTest(unittest.TestCase):
             Matrix([7, -3], [-2, 1]),
             Matrix([1, 3], [2, 7]).inverse())
         self.assertEquals(
-            matrix.identity(4),
+            matrix.identity(3),
             matrix * matrix.inverse())
 
     def testCoFactor(self):
