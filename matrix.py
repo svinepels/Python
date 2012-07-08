@@ -24,35 +24,22 @@ class Matrix(object):
         self._rows = rows
 
     @classmethod
-    def construct(self, m, n, function):
+    def construct(cls, m, n, function):
         rows = []
         for i in range(m):
             row = []
             for j in range(n):
                 row.append(function(i+1, j+1))
             rows.append(row)
-        return Matrix(*rows)
+        return cls(*rows)
 
     @classmethod
     def zero(cls, row_count, column_count):
-        rows = []
-        for m in range(row_count):
-            row = []
-            for n in range(column_count):
-                row.append(0)
-            rows.append(row)
-        return cls(*rows)
+        return cls.construct(row_count, column_count, lambda x, y: 0)
 
     @classmethod
     def identity(cls, row_count):
-        rows = []
-        for m in range(row_count):
-            row = []
-            for n in range(row_count):
-                if m == n: row.append(1)
-                else: row.append(0)
-            rows.append(row)
-        return cls(*rows)
+        return cls.construct(row_count, row_count, lambda x, y: 1 if x == y else 0)
 
     def __repr__(self):
         return "Matrix(*%r)" % (self._rows,)
@@ -98,8 +85,8 @@ class Matrix(object):
     def is_square(self):
         return self.row_count() == self.column_count()
 
-    def element_function(self, elfunction):
-        return Matrix.construct(self.row_count(), self.column_count(), lambda x,y: elfunction(self.element(x, y)))
+    def element_function(self, function):
+        return self.__class__.construct(self.row_count(), self.column_count(), lambda x,y: function(self.element(x, y)))
 
     def __eq__(self, other):
         if not self.equal_dimensions(other):
@@ -115,13 +102,7 @@ class Matrix(object):
     def __add__(self, other):
         if not self.equal_dimensions(other):
             raise MatrixError, 'The matrices do not have the same number of rows and columns'
-        rows = []
-        for m in range(self.row_count()):
-            row = []
-            for n in range(self.column_count()):
-                row.append(self.element(m+1, n+1) + other.element(m+1, n+1))
-            rows.append(row)
-        return Matrix(*rows)
+        return self.__class__.construct(self.row_count(), self.column_count(), lambda x, y: self.element(x, y) + other.element(x, y))
 
     def __sub__(self, other):
         return self + other.scal(-1)
@@ -132,21 +113,15 @@ class Matrix(object):
     def __mul__(self, other):
         if self.column_count() !=  other.row_count():
             raise MatrixError, 'The matrices cannot be multiplied'
-        rows = []
-        for m in range(self.row_count()):
-            row = []
-            for n in range(other.column_count()):
-                row.append(dot_product(self.rows()[m], other.columns()[n]))
-            rows.append(row)
-        return Matrix(*rows)
+        return self.__class__.construct(self.row_count(), other.column_count(), lambda x, y: dot_product(self.row(x), other.column(y)))
 
     def transpose(self):
-        return Matrix.construct(self.column_count(), self.row_count(), lambda x, y: self.element(y, x))
+        return self.__class__.construct(self.column_count(), self.row_count(), lambda x, y: self.element(y, x))
 
     def power(self, n):
         if not isinstance(n, int):
             raise MatrixError, 'The exponent must be an integer'
-        prod = Matrix.identity(self.row_count())
+        prod = self.__class__.identity(self.row_count())
         if n >= 0:
             for k in range(n):
                 prod *= self
@@ -162,7 +137,7 @@ class Matrix(object):
         del rows[i-1]
         for m in range(len(rows)):
             del rows[m][j-1]
-        return Matrix(*rows)
+        return self.__class__(*rows)
 
     def cofactor(self, i, j):
         return ((-1) ** (i + j)) * self.minor_matrix(i, j).det()
@@ -184,13 +159,7 @@ class Matrix(object):
     def adjugate(self):
         if not self.is_invertible():
             raise MatrixError, 'The matrix is not invertible'
-        rows = []
-        for m in range(self.row_count()):
-            row = []
-            for n in range(self.row_count()):
-                row.append(self.cofactor(m+1, n+1))
-            rows.append(row)
-        return Matrix(*rows).transpose()
+        return self.__class__.construct(self.row_count(), self.row_count(), lambda x, y: self.cofactor(x, y)).transpose()
 
     def inverse(self):
         if not self.is_invertible():
