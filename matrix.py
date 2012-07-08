@@ -22,7 +22,16 @@ class Matrix(object):
             for n in range(len(rows[0])):
                 rows[m][n] = float(rows[m][n])
         self._rows = rows
-            
+
+    @classmethod
+    def construct(self, m, n, function):
+        rows = []
+        for i in range(m):
+            row = []
+            for j in range(n):
+                row.append(function(i+1, j+1))
+            rows.append(row)
+        return Matrix(*rows)
 
     @classmethod
     def zero(cls, row_count, column_count):
@@ -34,9 +43,6 @@ class Matrix(object):
             rows.append(row)
         return cls(*rows)
 
-    def __repr__(self):
-        return "Matrix(*%r)" % (self._rows,)
-
     @classmethod
     def identity(cls, row_count):
         rows = []
@@ -47,6 +53,9 @@ class Matrix(object):
                 else: row.append(0)
             rows.append(row)
         return cls(*rows)
+
+    def __repr__(self):
+        return "Matrix(*%r)" % (self._rows,)
 
     def row_count(self):
         return len(self._rows)
@@ -65,6 +74,20 @@ class Matrix(object):
                 col.append(self.element(n+1,m+1))
             cols.append(col)
         return cols
+
+    def row(self, i):
+        if not isinstance(i, int):
+            raise MatrixError, 'The row index must be an integer'
+        if i > self.row_count() or i < 1:
+            raise MatrixError, 'The row index is too large'
+        return self.rows()[i-1]
+
+    def column(self, j):
+        if not isinstance(j, int):
+            raise MatrixError, 'The column index must be an integer'
+        if j > self.column_count():
+            raise MatrixError, 'The column index is too large'
+        return self.columns()[j-1]
 
     def element(self, m, n):
         return self.rows()[m-1][n-1]
@@ -185,6 +208,12 @@ class Matrix(object):
         if not self.is_invertible():
             raise MatrixError, 'The matrix is not invertible'
         return self.adjugate().scal(1.0 / self.det())
+
+    def is_symmetric(self):
+        return self == self.transpose()
+
+    def is_orthogonal(self):
+        return self.transpose() == self.inverse()
 
 
 

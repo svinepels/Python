@@ -162,5 +162,10 @@ class MatriserTest(unittest.TestCase):
         self.assertEquals(
             Matrix([1, 9], [4, -2]),
             Matrix([3, 8], [2, 7]) - Matrix([2, -1], [-2, 9]))
+
+    def testConstruct(self):
+        self.assertEquals(
+            Matrix([2, 3, 4], [3, 4, 5], [4, 5, 6]),
+            Matrix.construct(3, 3, lambda x,y: x+y))
         
 unittest.main()
