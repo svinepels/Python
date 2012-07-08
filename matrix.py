@@ -154,6 +154,4 @@ class Matrix(object):
             return determinant
 
     def is_invertible(self):
-        if self.det() == 0:
-            return False
-        return True
+        return self.det() != 0
